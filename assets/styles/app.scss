@@ -1,0 +1,14 @@
+// customize some Bootstrap variables
+$primary: gold;
+$secondary: #dad4ae;
+$font: "Italiana";
+$text: whitesmoke;
+
+// the ~ allows you to reference things in node_modules
+@import '~bootstrap/scss/bootstrap';
+
+body {
+    background-color: $primary;
+    font-family: $font;
+    color: $text;
+}
