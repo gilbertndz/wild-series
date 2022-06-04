@@ -11,4 +11,12 @@ body {
     background-color: $primary;
     font-family: $font;
     color: $text;
+    margin-right: 5px;
+    margin-left: 5px;
+    
+    a {
+        color: $text;
+    }
 }
+
+

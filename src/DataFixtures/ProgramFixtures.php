@@ -41,6 +41,12 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         $program->setSynopsis('Game of Thrones est une série télévisée américaine créée par Vince Gilligan et écrite par Vince Gilligan. Elle se déroule sur deux continents, dans le monde entier, et se déroule sur une période de deux ans. Elle se déroule sur deux continents, dans le monde entier, et se déroule sur une période de deux ans.');
         $program->setCategory($this->getReference('category_Drame'));
         $manager->persist($program);
+
+        $program = new Program();
+        $program->setTitle('Les feux de l\'amour');
+        $program->setSynopsis('Les feux de l\'amour est une série télévisée américaine créée par Vince Gilligan et écrite par Vince Gilligan. Elle se déroule sur deux continents, dans le monde entier, et se déroule sur une période de deux ans. Elle se déroule sur deux continents, dans le monde entier, et se déroule sur une période de deux ans.');
+        $program->setCategory($this->getReference('category_Drame'));
+        $manager->persist($program);
         }
         $manager->flush();
     }
