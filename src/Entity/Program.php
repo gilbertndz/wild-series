@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ProgramRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: ProgramRepository::class)]
 class Program
@@ -77,5 +79,32 @@ class Program
         $this->category = $category;
 
         return $this;
+    }
+
+    public function addSeason(Season $season): self
+    {
+        if (!$this->seasons->contains($season)) {
+            $this->seasons[] = $season;
+            $season->setProgram($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSeason(Season $season): self
+    {
+        if ($this->seasons->removeElement($season)) {
+            // set the owning side to null (unless already changed)
+            if ($season->getProgram() === $this) {
+                $season->setProgram(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getSeasons(): Collection
+    {
+        return $this->seasons;
     }
 }
