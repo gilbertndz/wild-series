@@ -5,4 +5,8 @@
     {{ form_widget(form) }}
     <button type="submit">Ajouter la série</button>
     {{ form_end(form) }}
+    <br><br>
+    <a href="{{ path('program_index') }}">
+        Retour à la liste des séries
+    </a>
 {% endblock %}
