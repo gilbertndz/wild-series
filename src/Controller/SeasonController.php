@@ -10,8 +10,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ProgramRepository;
 use App\Repository\SeasonRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 
-#[Route('/program/{id}/seasons', name: 'program_season_')]
+#[Route('/program/{programId}/seasons', name: 'program_season_')]
+#[Entity('program', options: ['id' => 'programId'])]
 class SeasonController extends AbstractController
 {
     #[Route('/', name: 'index')]
@@ -25,10 +27,9 @@ class SeasonController extends AbstractController
     }
 
     #[Route('/{seasonId}', methods: ['GET'], requirements: ['seasonId'=>'\d+'], name: 'show')]
-    public function show(int $id, SeasonRepository $seasonRepository, EpisodeRepository $episodeRepository, ProgramRepository $programRepository): Response
+    #[Entity('season', options: ['id' => 'seasonId'])]
+    public function show(Season $season, EpisodeRepository $episodeRepository, Program $program): Response
     {
-        $season = $seasonRepository-> findOneBy(['id' => $id]);
-        $program = $programRepository->findOneBy(['id' => $id]);
         $episodes = $episodeRepository->findAll();
         
         if (!$season) {
