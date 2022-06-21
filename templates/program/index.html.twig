@@ -3,7 +3,12 @@
 {% block title %}Les séries{% endblock %}
 
 {% block body %}
+
+    <a href="{{ path('category_index') }}">
+        Afficher toutes les catégories
+    </a> <br><br>
     <h1>Toutes les séries : </h1><br><br>
+
     {% for program in programs %}
         <div>
             <h2>{{ loop.index }} / {{ program.title }} </h2>
@@ -18,9 +23,6 @@
         Aucune série trouvée.
     {% endfor %}
     
-    <a href="{{ path('category_index') }}">
-        Afficher toutes les catégories
-    </a> <br><br>
     <a href="{{ path('app_index') }}">
         Retour à l'accueil
     </a>
