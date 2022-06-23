@@ -1,66 +1,78 @@
 <?php
-// src/Controller/ProgramController.php
+
 namespace App\Controller;
 
 use App\Entity\Program;
-use App\Entity\Season;
-use App\Entity\Episode;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Form\Program1Type;
 use App\Repository\ProgramRepository;
-use App\Repository\SeasonRepository;
-use App\Repository\EpisodeRepository;
-use App\Form\ProgramType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/program', name: 'program_')]
+#[Route('/program')]
 class ProgramController extends AbstractController
 {
-    #[Route('/', name: 'index')]
+    #[Route('/', name: 'app_program_index', methods: ['GET'])]
     public function index(ProgramRepository $programRepository): Response
     {
-        $programs = $programRepository->findAll();
-
         return $this->render('program/index.html.twig', [
-            'programs' => $programs,
-         ]);
+            'programs' => $programRepository->findAll(),
+        ]);
     }
 
-    #[Route('/new', name: 'new')]
+    #[Route('/new', name: 'app_program_new', methods: ['GET', 'POST'])]
     public function new(Request $request, ProgramRepository $programRepository): Response
     {
         $program = new Program();
-
-        $form = $this->createForm(ProgramType::class, $program);
-
+        $form = $this->createForm(Program1Type::class, $program);
         $form->handleRequest($request);
-   
+
         if ($form->isSubmitted() && $form->isValid()) {
             $programRepository->add($program, true);
 
-            return $this->redirectToRoute('program_index');
+            return $this->redirectToRoute('app_program_index', [], Response::HTTP_SEE_OTHER);
         }
-        
+
         return $this->renderForm('program/new.html.twig', [
+            'program' => $program,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', methods: ['GET'], requirements: ['id'=>'\d+'], name: 'show')]
-    public function show(Program $program, SeasonRepository $seasonReponsitory): Response
+    #[Route('/{id}', name: 'app_program_show', methods: ['GET'])]
+    public function show(Program $program): Response
     {
-        $seasons = $seasonReponsitory->findAll();
-        
-        if (!$program) {
-            throw $this->createNotFoundException(
-                'No program with id : '.$id.' found in program\'s table.'
-            );
-        }
         return $this->render('program/show.html.twig', [
             'program' => $program,
-            'seasons' => $seasons,
         ]);
     }
 
+    #[Route('/{id}/edit', name: 'app_program_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Program $program, ProgramRepository $programRepository): Response
+    {
+        $form = $this->createForm(Program1Type::class, $program);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $programRepository->add($program, true);
+
+            return $this->redirectToRoute('app_program_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('program/edit.html.twig', [
+            'program' => $program,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_program_delete', methods: ['POST'])]
+    public function delete(Request $request, Program $program, ProgramRepository $programRepository): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$program->getId(), $request->request->get('_token'))) {
+            $programRepository->remove($program, true);
+        }
+
+        return $this->redirectToRoute('app_program_index', [], Response::HTTP_SEE_OTHER);
+    }
 }

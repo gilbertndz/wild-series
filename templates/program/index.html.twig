@@ -1,31 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Les séries{% endblock %}
+{% block title %}Program index{% endblock %}
 
 {% block body %}
+    <h1>Program index</h1>
 
-    <a href="{{ path('app_category_index') }}">
-        Afficher toutes les catégories
-    </a> <br><br>
-    <h1>Toutes les séries : </h1><br><br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Synopsis</th>
+                <th>Poster</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for program in programs %}
+            <tr>
+                <td>{{ program.id }}</td>
+                <td>{{ program.title }}</td>
+                <td>{{ program.synopsis }}</td>
+                <td>{{ program.poster }}</td>
+                <td>
+                    <a href="{{ path('app_program_show', {'id': program.id}) }}">show</a>
+                    <a href="{{ path('app_program_edit', {'id': program.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-    {% for program in programs %}
-        <div>
-            <h2>{{ loop.index }} / {{ program.title }} </h2>
-            <h5>Catégorie : {{ program.category.name }}</h5>
-            <hr style="color: black;">
-            <p>{{ program.synopsis }}</p>
-            {# Lien vers la fiche de la série : #}
-            <a href="{{ path("program_show", { id: program.id }) }}">Voir la fiche</a>
-            <hr style="color: black; height: 3px">
-        </div>
-    {% else %}
-        Aucune série trouvée.
-    {% endfor %}
-    <a href="{{ path('program_new') }}">
-        Ajouter une série
-    </a><br><br>
-    <a href="{{ path('app_index') }}">
-        Retour à l'accueil
-    </a>
+    <a href="{{ path('app_program_new') }}">Create new</a>
 {% endblock %}
