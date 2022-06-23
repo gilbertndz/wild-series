@@ -1,46 +1,78 @@
 <?php
-// src/Controller/ProgramController.php
+
 namespace App\Controller;
 
-use App\Entity\Program;
 use App\Entity\Season;
-use App\Repository\EpisodeRepository;
+use App\Form\SeasonType;
+use App\Repository\SeasonRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\ProgramRepository;
-use App\Repository\SeasonRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 
-#[Route('/program/{programId}/seasons', name: 'program_season_')]
-#[Entity('program', options: ['id' => 'programId'])]
+#[Route('/season')]
 class SeasonController extends AbstractController
 {
-    #[Route('/', name: 'index')]
+    #[Route('/', name: 'app_season_index', methods: ['GET'])]
     public function index(SeasonRepository $seasonRepository): Response
     {
-        $seasons = $seasonRepository->findAll();
-
         return $this->render('season/index.html.twig', [
-            'seasons' => $seasons,
-         ]);
+            'seasons' => $seasonRepository->findAll(),
+        ]);
     }
 
-    #[Route('/{seasonId}', methods: ['GET'], requirements: ['seasonId'=>'\d+'], name: 'show')]
-    #[Entity('season', options: ['id' => 'seasonId'])]
-    public function show(Season $season, EpisodeRepository $episodeRepository, Program $program): Response
+    #[Route('/new', name: 'app_season_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, SeasonRepository $seasonRepository): Response
     {
-        $episodes = $episodeRepository->findAll();
-        
-        if (!$season) {
-            throw $this->createNotFoundException(
-                'No season with id : '.$id.' found in season\'s table.'
-            );
+        $season = new Season();
+        $form = $this->createForm(SeasonType::class, $season);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $seasonRepository->add($season, true);
+
+            return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
         }
+
+        return $this->renderForm('season/new.html.twig', [
+            'season' => $season,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_season_show', methods: ['GET'])]
+    public function show(Season $season): Response
+    {
         return $this->render('season/show.html.twig', [
             'season' => $season,
-            'program' => $program,
-            'episodes' => $episodes,
         ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_season_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Season $season, SeasonRepository $seasonRepository): Response
+    {
+        $form = $this->createForm(SeasonType::class, $season);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $seasonRepository->add($season, true);
+
+            return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('season/edit.html.twig', [
+            'season' => $season,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_season_delete', methods: ['POST'])]
+    public function delete(Request $request, Season $season, SeasonRepository $seasonRepository): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$season->getId(), $request->request->get('_token'))) {
+            $seasonRepository->remove($season, true);
+        }
+
+        return $this->redirectToRoute('app_season_index', [], Response::HTTP_SEE_OTHER);
     }
 }
